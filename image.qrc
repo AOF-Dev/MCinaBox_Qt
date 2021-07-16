@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/icon">
+        <file>downloader_icon.svg</file>
+        <file>66908482_p0_waifu2x_art_scale_tta_1.png</file>
+        <file>81718551_p0.jpg</file>
+        <file>65813479_p0_waifu2x_art_scale_tta_1.png</file>
+        <file>setting_icon.svg</file>
+    </qresource>
+</RCC>
