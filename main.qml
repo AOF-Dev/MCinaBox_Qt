@@ -144,11 +144,7 @@ ApplicationWindow {
                         height: 30
                         source: "/icon/81718551_p0.jpg"
                     }
-                    onClicked: {
-                        //delete_user.open()
-                        Qt.inputMethod.visible=true
-                        Qt.inputMethod.show()
-                    }
+                    onClicked: (user_list.count==0)?  {} : (user_list.currentIndex==-1)? {} : delete_user.open()
                 }
                 Rectangle {
                     color: "#80ffffff"
@@ -161,12 +157,19 @@ ApplicationWindow {
                         spacing: -12
                         interactive: false
                         model: user_manager.user_name_list
+                        currentIndex: -1
                         delegate: Button {
+                            id: each_user_button
                             width: parent.width
                             height: 50
-                            Material.background: "#00000000"
+                            Material.background: highlighted? "#60E91E63" : "#00000000"
                             text: modelData
                             font.pointSize: 13
+                            onClicked: {
+                                if (user_list.currentIndex!=-1) user_list.currentItem.highlighted = false
+                                user_list.currentIndex = index
+                                user_list.currentItem.highlighted = true
+                            }
                         }
                     }
                 }
@@ -281,6 +284,35 @@ ApplicationWindow {
         y: (window.height-height)/2.6
         width: window.width*0.8
         height: window.height*0.2
+        Text {
+            text: qsTr("你确定？")
+            font.pointSize: 28
+        }
+        Button {
+            text: qsTr("确定")
+            font.pointSize: 29
+            Material.foreground: Material.Purple
+            Material.background: "#00000000"
+            x: parent.width*0.58
+            y: parent.height*0.25
+            width: parent.width*0.15
+            height: parent.height*0.7
+            onClicked: {
+                user_manager.delete_user(user_list.currentIndex)
+                delete_user.close()
+            }
+        }
+        Button {
+            text: qsTr("取消")
+            font.pointSize: 29
+            Material.foreground: Material.Purple
+            Material.background: "#00000000"
+            x: parent.width*0.8
+            y: parent.height*0.25
+            width: parent.width*0.15
+            height: parent.height*0.7
+            onClicked: delete_user.close()
+        }
     }
 
     ListView {
@@ -319,7 +351,7 @@ ApplicationWindow {
                  game_list.currentItem.highlighted = null
                  game_list.currentIndex = index
                  game_list.currentItem.highlighted = each_game_version_button
-                game_version_label.text = qsTr("当前游戏版本：") + game_version_manager.get_game_version_string(index)
+                 game_version_label.text = qsTr("当前游戏版本：") + game_version_manager.get_game_version_string(index)
             }
         }
     }
