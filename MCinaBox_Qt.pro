@@ -1,5 +1,5 @@
 QT += quick quickcontrols2 svg
-QT += androidextras
+#QT += androidextras #disable this when not build for Android
 #QT +=virtualkeyboard
 
 CONFIG += c++11
