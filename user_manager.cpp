@@ -33,8 +33,8 @@ void user_manager::read_file(){
     user_config.open(QIODevice::ReadWrite);
     if (user_config.readAll()!=""){
         user_config.seek(0);
-        tmp_text=user_config.readAll();
-        tmp_list=tmp_text.split('\n');
+        tmp_text = user_config.readAll();
+        tmp_list = tmp_text.split('\n');
         for (int i=0;i<tmp_list.count();i++) {
             user_name_list.append(tmp_list[i]); i++;
             user_password_list.append(tmp_list[i]); i++;

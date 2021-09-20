@@ -53,7 +53,8 @@ int main(int argc, char *argv[])
     //load game version list
     game_version_manager game_version_manager;
     game_version_manager.fresh_game_version_list();
-
+    //get new game list
+    install_new_game install_new_game;
 
     QGuiApplication app(argc, argv);
 
@@ -71,6 +72,8 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("game_version_manager",&game_version_manager);
     engine.rootContext()->setContextProperty("user_manager",&user_manager);
+    engine.rootContext()->setContextProperty("install_new_game",&install_new_game);
+
 
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

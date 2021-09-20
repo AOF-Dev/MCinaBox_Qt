@@ -4,6 +4,14 @@
 #include <QObject>
 #include <QThread>
 #include <QStringList>
+#include <QNetworkAccessManager>
+#include <QNetworkRequest>
+#include <QNetworkReply>
+#include <QDir>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonValue>
+#include <QJsonArray>
 
 class game_version_manager : public QThread
 {
@@ -22,6 +30,23 @@ public:
     }
 signals:
     void game_version_list_Changed();
+};
+class install_new_game : public QObject
+{
+    Q_OBJECT
+public:
+    explicit install_new_game(QObject *parent = nullptr);
+    QStringList old_version,release_version,snapshot_version;
+    QStringList old_version_url,release_version_url,snapshot_version_url;
+    Q_INVOKABLE QStringList to_old_version(){return old_version;}
+    Q_INVOKABLE QStringList to_release_version(){return release_version;}
+    Q_INVOKABLE QStringList to_snapshot_version(){return snapshot_version;}
+    Q_INVOKABLE void get_new_game_list();
+public slots:
+    void http_get_completed(QNetworkReply* reply);
+signals:
+    void get_completed();
+    void get_failed();
 };
 
 #endif // GAME_VERSION_MANAGER_H

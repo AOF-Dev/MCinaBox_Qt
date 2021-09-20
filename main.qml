@@ -8,9 +8,8 @@ import QtQuick.Layouts 1.11
 ApplicationWindow {
     id: window
     width: 1000
-    height: 707
+    height: 500
     visible: true
-    color: "#88ffffff"
     Material.theme: Material.Light
     background: Image {
         id: backgroundimage
@@ -78,6 +77,7 @@ ApplicationWindow {
         id: bottomtoolbar
         Label {
             id: game_version_label
+            x: 5
             text: qsTr("请选择游戏版本")
             font.pointSize: 21
         }
@@ -117,7 +117,7 @@ ApplicationWindow {
                     Layout.preferredWidth: parent.width
                     Layout.preferredHeight: 50
                     text: qsTr("添加用户")
-                    font.pointSize: 12
+                    font.pointSize: 15
                     Image {
                         x:5
                         y:10
@@ -136,7 +136,7 @@ ApplicationWindow {
                     Layout.preferredWidth: parent.width
                     Layout.preferredHeight: 50
                     text: qsTr("删除用户")
-                    font.pointSize: 12
+                    font.pointSize: 15
                     Image {
                         x:5
                         y:10
@@ -174,6 +174,26 @@ ApplicationWindow {
                     }
                 }
             }
+            Button {
+                id: add_new_game_button
+                Material.background: "#88ffffff"
+                y: user_manager_layout.height+50
+                width: parent.width
+                height: 50
+                text: qsTr("游戏设置")
+                font.pointSize: 15
+                Image {
+                    x:5
+                    y:10
+                    width: 30
+                    height: 30
+                    source: "/icon/81718551_p0.jpg"
+                }
+                /*onClicked: {
+                    game_stackView.push(busy_page)
+                    install_new_game.get_new_game_list()
+                }*/
+            }
         }
     }
 
@@ -208,11 +228,12 @@ ApplicationWindow {
             }
         }
         Label {
+            enabled: false
             x: parent.width*0.1
             y: parent.height*0.45
             width: parent.width*0.6
             height: (user_password.text=="")? contentWidth : user_password.contentHeight
-            text: (user_password.text=="")? qsTr("密码") : ""
+            text: (user_password.text=="")? qsTr("密码（暂未实现）") : ""
             clip: false
             font.pointSize: 20
             TextInput {
@@ -231,11 +252,12 @@ ApplicationWindow {
             }
         }
         Label{
+            enabled: false
             x: parent.width*0.1
             y: parent.height*0.8
             width: parent.width*0.6
             height: (user_logging_method.text=="")? contentWidth : user_logging_method.contentHeight
-            text: (user_logging_method.text=="")? qsTr("登录方式") : ""
+            text: (user_logging_method.text=="")? qsTr("登录方式（暂未实现）") : ""
             clip: false
             font.pointSize: 20
             TextInput {
@@ -260,9 +282,9 @@ ApplicationWindow {
             width: parent.width*0.2
             height: parent.height*0.3
             onClicked: {
-                user_name.text=""
-                user_password.text=""
-                user_logging_method.text=""
+                user_name.text = ""
+                user_password.text = ""
+                user_logging_method.text = ""
                 add_user.close()
             }
         }
@@ -315,47 +337,207 @@ ApplicationWindow {
         }
     }
 
-    ListView {
-        id: game_list
-        x: 220
-        y: 16
-        width: 628
-        height: 460
-        interactive: true
-        clip: false
-        model: game_version_manager.game_version_list
-        spacing: -10
-        delegate: Button {
-            id: each_game_version_button
-            width: game_list.width
-            height: 60
-            Material.background: highlighted? "#e0ffffff" : "#a0ffffff"
-            Text {
-                x: 20
-                y: 10
-                text: modelData
-                font.pointSize: 20
 
-            }
+    StackView {
+        id: game_stackView
+        x: leftlist.width*1.006
+        width: window.width-leftlist.width
+        height: window.height
+        Component.onCompleted: push(game_list_page)
+    }
+    Component {
+        id: game_list_page
+        Rectangle {
+            color: "#00000000"
+            anchors.fill: parent
             Button {
-                x: parent.width-parent.height
-                width: parent.height
-                height: parent.height
-                Material.background: "#00000000"
-                Image {
-                    anchors.fill: parent
-                    source: "/icon/setting_icon.svg"
+                id: add_new_game_button
+                Material.background: "#aaffffff"
+                y: -height*0.1
+                width: parent.width
+                height: parent.height*0.2
+                text: qsTr("添加游戏")
+                font.pointSize: 18
+                onClicked: {
+                    game_stackView.push(busy_page)
+                    install_new_game.get_new_game_list()
                 }
             }
-            onClicked: {
-                 game_list.currentItem.highlighted = null
-                 game_list.currentIndex = index
-                 game_list.currentItem.highlighted = each_game_version_button
-                 game_version_label.text = qsTr("当前游戏版本：") + game_version_manager.get_game_version_string(index)
+            ListView {
+                id: game_list
+                y: add_new_game_button.height*1.05
+                width: parent.width
+                height: parent.height
+                interactive: true
+                clip: true
+                model: game_version_manager.game_version_list
+                spacing: -10
+                delegate: Button {
+                    id: each_game_version_button
+                    width: game_list.width
+                    height: 60
+                    Material.background: highlighted? "#e0ffffff" : "#a0ffffff"
+                    Text {
+                        x: 20
+                        y: 10
+                        text: modelData
+                        font.pointSize: 20
+
+                    }
+                    Button {
+                        x: parent.width-parent.height
+                        width: parent.height
+                        height: parent.height
+                        Material.background: "#00000000"
+                        Image {
+                            anchors.fill: parent
+                            source: "/icon/setting_icon.svg"
+                        }
+                    }
+                    onClicked: {
+                         game_list.currentItem.highlighted = null
+                         game_list.currentIndex = index
+                         game_list.currentItem.highlighted = each_game_version_button
+                         game_version_label.text = qsTr("当前游戏版本：") + game_version_manager.get_game_version_string(index)
+                    }
+                }
+            }
+        }
+
+    }
+    Component {
+        id: busy_page
+        Rectangle {
+            anchors.fill: parent
+            color: "#00000000"
+            BusyIndicator {
+                id: busy1
+                x: (parent.width-width)/2
+                y: (parent.height-height)/2
+                width: parent.width*0.2
+                height: width
+                visible: true
+                Connections {
+                    target: install_new_game
+                    onGet_completed: {
+                        game_stackView.push(choose_install_game_version_page)
+                    }
+                }
+                Connections {
+                    target: install_new_game
+                    onGet_failed: {
+                        game_stackView.push(get_failed_page)
+                    }
+                }
+            }
+        }
+    }
+    Component {
+        id: get_failed_page
+        Rectangle {
+            color: "#00000000"
+            Button {
+                id: back_button2
+                Material.background: "#aaffffff"
+                y: -height*0.1
+                width: parent.width
+                height: parent.height*0.2
+                text: qsTr("返回")
+                font.pointSize: 18
+                onClicked: {
+                    game_stackView.pop()
+                    game_stackView.pop()
+                }
+            }
+            Rectangle {
+                y: back_button2.height
+                width: parent.width
+                height: parent.height*0.5
+                color: "#80ffffff"
+                Text {
+                    x: (parent.width-width)/2
+                    y: (parent.height-height)/2
+                    text: qsTr("获取游戏版本列表失败\n（如果重新联网后依然失败，请重新打开本应用）")
+                    horizontalAlignment: Text.AlignHCenter
+                    font.pointSize: 25
+                }
             }
         }
     }
 
+    Component {
+        id: choose_install_game_version_page
+        Rectangle {
+            color: "#00000000"
+            Button {
+                id: back_button1
+                Material.background: "#aaffffff"
+                y: -height*0.1
+                width: parent.width
+                height: parent.height*0.2
+                text: qsTr("返回")
+                font.pointSize: 18
+                onClicked: {
+                    game_stackView.pop()
+                    game_stackView.pop()
+                }
+            }
+            Button {
+                id: snapshot_version_button
+                Material.background: "#88ffffff"
+                y: back_button1.height*1.05
+                width: parent.width
+                height: window.height/6
+                text: qsTr("快照版")
+                font.pointSize: 15
+            }
+            Button {
+                id: release_version_button
+                Material.background: "#88ffffff"
+                y: snapshot_version_button.y+snapshot_version_button.height*1.02
+                width: parent.width
+                height: window.height/6
+                text: qsTr("正式版")
+                font.pointSize: 15
+            }
+            Button {
+                id: old_version_button
+                Material.background: "#88ffffff"
+                y: release_version_button.y+snapshot_version_button.height*1.02
+                width: parent.width
+                height: window.height/6
+                text: qsTr("旧版")
+                font.pointSize: 15
+            }
+        }
+    }
+    Component {
+        id: choose_install_options_page
+        Rectangle {
+            color: "#00000000"
+            anchors.fill: parent
+            Button {
+                width: parent.width
+                height: 50
+                enabled: false
+                text: qsTr("安装Optifine（未实现）")
+            }
+            Button {
+                y: 52
+                width: parent.width
+                height: 50
+                enabled: false
+                text: qsTr("安装Forge（未实现）")
+            }
+            Button {
+                y: 104
+                width: parent.width
+                height: 50
+                enabled: false
+                text: qsTr("安装Fabric（未实现）")
+            }
+        }
+    }
 
 
 

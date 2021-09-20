@@ -1,5 +1,5 @@
-QT += quick quickcontrols2 svg
-#QT += androidextras #disable this when not build for Android
+QT += quick quickcontrols2 svg network
+QT += androidextras #disable this when not build for Android
 #QT +=virtualkeyboard
 
 CONFIG += c++11
@@ -52,4 +52,4 @@ DISTFILES += \
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
-
+android: include(android/android_openssl/openssl.pri)
