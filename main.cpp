@@ -74,7 +74,6 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("user_manager",&user_manager);
     engine.rootContext()->setContextProperty("install_new_game",&install_new_game);
 
-
     const QUrl url(QStringLiteral("qrc:/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
         &app, [url](QObject *obj, const QUrl &objUrl) {

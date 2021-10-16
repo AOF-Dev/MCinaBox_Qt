@@ -36,17 +36,23 @@ class install_new_game : public QObject
     Q_OBJECT
 public:
     explicit install_new_game(QObject *parent = nullptr);
+    Q_PROPERTY(QStringList old_version READ to_old_version NOTIFY old_version_Changed)
+    Q_PROPERTY(QStringList release_version READ to_release_version NOTIFY release_version_Changed)
+    Q_PROPERTY(QStringList snapshot_version READ to_snapshot_version NOTIFY snapshot_version_Changed)
     QStringList old_version,release_version,snapshot_version;
     QStringList old_version_url,release_version_url,snapshot_version_url;
-    Q_INVOKABLE QStringList to_old_version(){return old_version;}
-    Q_INVOKABLE QStringList to_release_version(){return release_version;}
-    Q_INVOKABLE QStringList to_snapshot_version(){return snapshot_version;}
+    QStringList to_old_version(){return old_version;}
+    QStringList to_release_version(){return release_version;}
+    QStringList to_snapshot_version(){return snapshot_version;}
     Q_INVOKABLE void get_new_game_list();
 public slots:
     void http_get_completed(QNetworkReply* reply);
 signals:
     void get_completed();
     void get_failed();
+    void old_version_Changed();
+    void release_version_Changed();
+    void snapshot_version_Changed();
 };
 
 #endif // GAME_VERSION_MANAGER_H

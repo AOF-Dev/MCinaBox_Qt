@@ -32,16 +32,15 @@ void install_new_game::http_get_completed(QNetworkReply* reply){
         emit install_new_game::get_failed();
     }
     else {
-        qDebug() << reply->readAll();
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
         QJsonObject json = data.object();
         QJsonArray versions = json.value("versions").toArray();
         for (int i=0;i<versions.count();i++) {
-            if (versions.at(i).toObject().value("type")=="snapshot") {
+            if (versions.at(i).toObject().value("type").toString().contains("snapshot")) {
                 snapshot_version.append(versions.at(i).toObject().value("id").toString());
                 snapshot_version_url.append(versions.at(i).toObject().value("url").toString());
             }
-            if (versions.at(i).toObject().value("type").toString().contains("old")) {
+            else if (versions.at(i).toObject().value("type").toString().contains("old")) {
                 old_version.append(versions.at(i).toObject().value("id").toString());
                 old_version_url.append(versions.at(i).toObject().value("url").toString());
             }
@@ -50,6 +49,9 @@ void install_new_game::http_get_completed(QNetworkReply* reply){
                 release_version_url.append(versions.at(i).toObject().value("url").toString());
             }
         }
+        emit snapshot_version_Changed();
+        emit release_version_Changed();
+        emit old_version_Changed();
         emit install_new_game::get_completed();
     }
 
