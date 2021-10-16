@@ -1,8 +1,8 @@
 QT += quick quickcontrols2 svg network
-QT += androidextras #disable this when not build for Android
+#QT += androidextras #disable this when not build for Android
 #QT +=virtualkeyboard
 
-CONFIG += c++11
+CONFIG += c++11 qtquickcompiler
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
