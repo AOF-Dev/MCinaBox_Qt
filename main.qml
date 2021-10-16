@@ -1,5 +1,5 @@
 import QtQuick 2.12
-import QtQuick.Window 2.12
+import QtQuick.Window 2.3
 //import QtQuick.VirtualKeyboard 2.4
 import QtQuick.Controls.Material 2.3
 import QtQuick.Controls 2.5
@@ -104,80 +104,78 @@ ApplicationWindow {
             contentWidth: width
             contentHeight: height
             flickableDirection: Flickable.VerticalFlick
-
-            ColumnLayout {
-                id: user_manager_layout
-                width: parent.width  // @disable-check M16
-                height: 50+user_list.height // @disable-check M16
-                spacing: -12
-                Button {
-                    id: add_user_button
-                    z: 2
-                    Material.background: "#88ffffff"
-                    Layout.preferredWidth: parent.width
-                    Layout.preferredHeight: 50
-                    text: qsTr("添加用户")
-                    font.pointSize: 15
-                    Image {
-                        x:5
-                        y:10
-                        width: 30
-                        height: 30
-                        source: "/icon/81718551_p0.jpg"
-                    }
-                    onClicked: {
-                        add_user.open()
-                    }
+            Button {
+                id: add_user_button
+                z: 2
+                Material.background: "#88ffffff"
+                y: 0
+                width: parent.width
+                height: 50
+                text: qsTr("添加用户")
+                font.pointSize: 15
+                Image {
+                    x:5
+                    y:10
+                    width: 30
+                    height: 30
+                    source: "/icon/81718551_p0.jpg"
                 }
-                Button {
-                    id: delete_user_button
-                    z: 1
-                    Material.background: "#88ffffff"
-                    Layout.preferredWidth: parent.width
-                    Layout.preferredHeight: 50
-                    text: qsTr("删除用户")
-                    font.pointSize: 15
-                    Image {
-                        x:5
-                        y:10
-                        width: 30
-                        height: 30
-                        source: "/icon/81718551_p0.jpg"
-                    }
-                    onClicked: (user_list.count==0)?  {} : (user_list.currentIndex==-1)? {} : delete_user.open()
+                onClicked: {
+                    add_user.open()
                 }
-                Rectangle {
-                    color: "#80ffffff"
-                    z: 0
-                    Layout.preferredWidth: parent.width
-                    Layout.preferredHeight: user_list.contentHeight
-                    ListView {
-                        id: user_list
-                        anchors.fill: parent
-                        spacing: -12
-                        interactive: false
-                        model: user_manager.user_name_list
-                        currentIndex: -1
-                        delegate: Button {
-                            id: each_user_button
-                            width: parent.width
-                            height: 50
-                            Material.background: highlighted? "#60E91E63" : "#00000000"
-                            text: modelData
-                            font.pointSize: 13
-                            onClicked: {
-                                if (user_list.currentIndex!=-1) user_list.currentItem.highlighted = false
-                                user_list.currentIndex = index
-                                user_list.currentItem.highlighted = true
-                            }
+            }
+            Button {
+                id: delete_user_button
+                z: 1
+                Material.background: "#88ffffff"
+                y: 38
+                width: parent.width
+                height: 50
+                text: qsTr("删除用户")
+                font.pointSize: 15
+                Image {
+                    x:5
+                    y:10
+                    width: 30
+                    height: 30
+                    source: "/icon/81718551_p0.jpg"
+                }
+                onClicked: (user_list.count==0)?  {} : (user_list.currentIndex==-1)? {} : delete_user.open()
+            }
+            Rectangle {
+                color: "#80ffffff"
+                z: 0
+                y: 76
+                width: parent.width
+                height: user_list.contentHeight
+                ListView {
+                    id: user_list
+                    anchors.fill: parent
+                    spacing: -12
+                    interactive: false
+                    model: user_manager.user_name_list
+                    currentIndex: -1
+                    delegate: Button {
+                        id: each_user_button
+                        width: parent.width
+                        height: 50
+                        Material.background: highlighted? "#60E91E63" : "#00000000"
+                        text: modelData
+                        font.pointSize: 13
+                        onClicked: {
+                            if (user_list.currentIndex!=-1) user_list.currentItem.highlighted = false
+                            user_list.currentIndex = index
+                            user_list.currentItem.highlighted = true
                         }
                     }
                 }
             }
+
             Button {
-                id: add_new_game_button
+                id: game_setting_button
                 Material.background: "#88ffffff"
-                y: user_manager_layout.height+50
+                z: 1
+                y: user_list.y+user_list.height+80
                 width: parent.width
                 height: 50
                 text: qsTr("游戏设置")
@@ -189,10 +187,26 @@ ApplicationWindow {
                     height: 30
                     source: "/icon/81718551_p0.jpg"
                 }
-                /*onClicked: {
+            }
+            Button {
+                enabled: game_stackView.depth==1 ? true : false
+                Material.background: "#88ffffff"
+                z: 0
+                y: user_list.y+user_list.height+118
+                width: parent.width
+                text: qsTr("添加游戏")
+                font.pointSize: 15
+                Image {
+                    x:5
+                    y:10
+                    width: 30
+                    height: 30
+                    source: "/icon/81718551_p0.jpg"
+                }
+                onClicked: {
                     game_stackView.push(busy_page)
                     install_new_game.get_new_game_list()
-                }*/
+                }
             }
         }
     }
@@ -352,20 +366,22 @@ ApplicationWindow {
             anchors.fill: parent
             Button {
                 id: add_new_game_button
+                visible: game_list.count==0 ? true : false
                 Material.background: "#aaffffff"
                 y: -height*0.1
                 width: parent.width
                 height: parent.height*0.2
-                text: qsTr("添加游戏")
+                text: qsTr("还没有游戏，点击添加游戏")
                 font.pointSize: 18
                 onClicked: {
                     game_stackView.push(busy_page)
                     install_new_game.get_new_game_list()
                 }
             }
+
             ListView {
                 id: game_list
-                y: add_new_game_button.height*1.05
+                y: game_list.count==0 ? add_new_game_button.height*1.05 : 0
                 width: parent.width
                 height: parent.height
                 interactive: true
@@ -420,7 +436,7 @@ ApplicationWindow {
                 Connections {
                     target: install_new_game
                     onGet_completed: {
-                        game_stackView.push(choose_install_game_version_page)
+                        game_stackView.push(choose_install_game_version_page_root)
                     }
                 }
                 Connections {
@@ -437,7 +453,7 @@ ApplicationWindow {
         Rectangle {
             color: "#00000000"
             Button {
-                id: back_button2
+                id: back_button_failed
                 Material.background: "#aaffffff"
                 y: -height*0.1
                 width: parent.width
@@ -457,7 +473,7 @@ ApplicationWindow {
                 Text {
                     x: (parent.width-width)/2
                     y: (parent.height-height)/2
-                    text: qsTr("获取游戏版本列表失败\n（如果重新联网后依然失败，请重新打开本应用）")
+                    text: qsTr("获取游戏版本列表失败")
                     horizontalAlignment: Text.AlignHCenter
                     font.pointSize: 25
                 }
@@ -466,11 +482,11 @@ ApplicationWindow {
     }
 
     Component {
-        id: choose_install_game_version_page
+        id: choose_install_game_version_page_root
         Rectangle {
             color: "#00000000"
             Button {
-                id: back_button1
+                id: back_button_root
                 Material.background: "#aaffffff"
                 y: -height*0.1
                 width: parent.width
@@ -485,29 +501,157 @@ ApplicationWindow {
             Button {
                 id: snapshot_version_button
                 Material.background: "#88ffffff"
-                y: back_button1.height*1.05
+                y: back_button_root.height*1.03
                 width: parent.width
                 height: window.height/6
                 text: qsTr("快照版")
                 font.pointSize: 15
+                onClicked: game_stackView.push(choose_install_game_version_page_snapshot)
             }
             Button {
                 id: release_version_button
                 Material.background: "#88ffffff"
-                y: snapshot_version_button.y+snapshot_version_button.height*1.02
+                y: snapshot_version_button.y+snapshot_version_button.height*1.01
                 width: parent.width
                 height: window.height/6
                 text: qsTr("正式版")
                 font.pointSize: 15
+                onClicked: game_stackView.push(choose_install_game_version_page_release)
             }
             Button {
                 id: old_version_button
                 Material.background: "#88ffffff"
-                y: release_version_button.y+snapshot_version_button.height*1.02
+                y: release_version_button.y+snapshot_version_button.height*1.01
                 width: parent.width
                 height: window.height/6
                 text: qsTr("旧版")
                 font.pointSize: 15
+                onClicked: game_stackView.push(choose_install_game_version_page_old)
+            }
+        }
+    }
+    Component {
+        id: choose_install_game_version_page_snapshot
+        Rectangle {
+            color: "#00000000"
+            Button {
+                id: back_button_snapshot
+                Material.background: "#aaffffff"
+                y: -height*0.1
+                width: parent.width
+                height: parent.height*0.2
+                text: qsTr("返回")
+                font.pointSize: 18
+                onClicked: {
+                    game_stackView.pop()
+                }
+            }
+            ListView {
+                id: snapshot_list
+                y: back_button_snapshot.height*1.03
+                width: parent.width
+                height: parent.height
+                spacing: -10
+                model: install_new_game.snapshot_version
+                interactive: true
+                clip: true
+                delegate: Button {
+                    width: snapshot_list.width
+                    height: 60
+                    Material.background: "#a0ffffff"
+                    Text {
+                        x: 20
+                        y: 10
+                        text: modelData
+                        font.pointSize: 20
+                    }
+                    onClicked: {
+                        game_stackView.push(busy_page)
+                    }
+                }
+            }
+        }
+    }
+    Component {
+        id: choose_install_game_version_page_release
+        Rectangle {
+            color: "#00000000"
+            Button {
+                id: back_button_release
+                Material.background: "#aaffffff"
+                y: -height*0.1
+                width: parent.width
+                height: parent.height*0.2
+                text: qsTr("返回")
+                font.pointSize: 18
+                onClicked: {
+                    game_stackView.pop()
+                }
+            }
+            ListView {
+                id: release_list
+                y: back_button_release.height*1.03
+                width: parent.width
+                height: parent.height
+                spacing: -10
+                model: install_new_game.release_version
+                clip: true
+                interactive: true
+                delegate: Button {
+                    width: release_list.width
+                    height: 60
+                    Material.background: "#a0ffffff"
+                    Text {
+                        x: 20
+                        y: 10
+                        text: modelData
+                        font.pointSize: 20
+                    }
+                    onClicked: {
+
+                    }
+                }
+            }
+        }
+    }
+    Component {
+        id: choose_install_game_version_page_old
+        Rectangle {
+            color: "#00000000"
+            Button {
+                id: back_button_old
+                Material.background: "#aaffffff"
+                y: -height*0.1
+                width: parent.width
+                height: parent.height*0.2
+                text: qsTr("返回")
+                font.pointSize: 18
+                onClicked: {
+                    game_stackView.pop()
+                }
+            }
+            ListView {
+                id: old_list
+                y: back_button_old.height*1.03
+                width: parent.width
+                height: parent.height
+                spacing: -10
+                model: install_new_game.old_version
+                clip: true
+                delegate: Button {
+                    width: old_list.width
+                    height: 60
+                    Material.background: "#a0ffffff"
+                    Text {
+                        x: 20
+                        y: 10
+                        text: modelData
+                        font.pointSize: 20
+                    }
+                    onClicked: {
+
+                    }
+                }
             }
         }
     }
@@ -538,6 +682,7 @@ ApplicationWindow {
             }
         }
     }
+
 
 
 
@@ -575,9 +720,8 @@ ApplicationWindow {
 
 
 
-
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.5}
+    D{i:0;autoSize:true;height:480;width:640}
 }
 ##^##*/
