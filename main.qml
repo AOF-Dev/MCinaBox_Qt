@@ -5,18 +5,22 @@ import QtQuick.Controls.Material 2.3
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.11
 
-ApplicationWindow {
+Window {
     id: window
     width: 1000
     height: 500
     visible: true
     Material.theme: Material.Light
-    background: Image {
+    Image {
         id: backgroundimage
+        anchors.fill: parent
         source: "/icon/66908482_p0_waifu2x_art_scale_tta_1.png"
     }
-    header: ToolBar {
+    ToolBar {
         id: toptoolbar
+        z: 10
+        width: parent.width
+        height: 50
         Label {
             id: title
             x: font.pointSize*0.3
@@ -58,6 +62,7 @@ ApplicationWindow {
             }
         }
     }
+
     Popup {
         id: launcher_settings
         x: window.width*0.1
@@ -73,8 +78,12 @@ ApplicationWindow {
         height: window.height*0.8
     }
 
-    footer: ToolBar {
+    ToolBar {
         id: bottomtoolbar
+        z: 10
+        y: parent.height-height
+        height: 50
+        width: parent.width
         Label {
             id: game_version_label
             x: 5
@@ -94,7 +103,7 @@ ApplicationWindow {
     Rectangle {
         id: rectangle
         x: 0
-        y: 0
+        y: toptoolbar.height
         width: 200
         height: window.height
         color: "#90ffffff"
@@ -355,8 +364,9 @@ ApplicationWindow {
     StackView {
         id: game_stackView
         x: leftlist.width*1.006
-        width: window.width-leftlist.width
-        height: window.height
+        y: toptoolbar.height
+        width: window.width-x
+        height: window.height-toptoolbar.height-bottomtoolbar.height
         Component.onCompleted: push(game_list_page)
     }
     Component {
@@ -435,13 +445,13 @@ ApplicationWindow {
                 visible: true
                 Connections {
                     target: install_new_game
-                    onGet_completed: {
+                    onGet_Completed: {
                         game_stackView.push(choose_install_game_version_page_root)
                     }
                 }
                 Connections {
                     target: install_new_game
-                    onGet_failed: {
+                    onGet_Failed: {
                         game_stackView.push(get_failed_page)
                     }
                 }
@@ -566,7 +576,7 @@ ApplicationWindow {
                         font.pointSize: 20
                     }
                     onClicked: {
-                        game_stackView.push(busy_page)
+                        game_stackView.push(choose_install_options_page)
                     }
                 }
             }
@@ -608,7 +618,7 @@ ApplicationWindow {
                         font.pointSize: 20
                     }
                     onClicked: {
-
+                        game_stackView.push(choose_install_options_page)
                     }
                 }
             }
@@ -649,7 +659,7 @@ ApplicationWindow {
                         font.pointSize: 20
                     }
                     onClicked: {
-
+                        game_stackView.push(choose_install_options_page)
                     }
                 }
             }
@@ -661,27 +671,64 @@ ApplicationWindow {
             color: "#00000000"
             anchors.fill: parent
             Button {
+                id: back_button_install_options
+                Material.background: "#aaffffff"
+                y: -height*0.1
                 width: parent.width
-                height: 50
+                height: parent.height*0.2
+                text: qsTr("返回")
+                font.pointSize: 18
+                onClicked: {
+                    game_stackView.pop()
+                }
+            }
+
+            Button {
+                y: back_button_install_options.height*0.85
+                height: (parent.height-back_button_install_options.height)/5
+                width: parent.width
                 enabled: false
                 text: qsTr("安装Optifine（未实现）")
             }
             Button {
-                y: 52
+                y: back_button_install_options.height*0.85+(parent.height-back_button_install_options.height)/5
+                height: (parent.height-back_button_install_options.height)/5
                 width: parent.width
-                height: 50
                 enabled: false
                 text: qsTr("安装Forge（未实现）")
             }
             Button {
-                y: 104
+                y: back_button_install_options.height*0.85+(parent.height-back_button_install_options.height)*2/5
+                height: (parent.height-back_button_install_options.height)/5
                 width: parent.width
-                height: 50
                 enabled: false
                 text: qsTr("安装Fabric（未实现）")
             }
+            Button {
+                z: 1
+                y: parent.height-height
+                height: (parent.height-back_button_install_options.height)/5
+                width: parent.width/2
+                text: qsTr("重置")
+                font.pointSize: 1
+            }
+
+            Button {
+                z: 0
+                x: width
+                y: parent.height-height
+                height: (parent.height-back_button_install_options.height)/5
+                width: parent.width/2
+                enabled: true
+                text: qsTr("安装")
+                font.pointSize: 18
+            }
         }
     }
+
+
+
+
 
 
 
