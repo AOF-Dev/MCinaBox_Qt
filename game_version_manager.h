@@ -45,10 +45,11 @@ public:
     QStringList to_release_version(){return release_version;}
     QStringList to_old_version(){return old_version;}
     int index[2];
-    Q_INVOKABLE void set_index(int a,int b){index[1]=a; index[2]=b;}
+    Q_INVOKABLE void set_index(int a,int b){index[1]=a; index[2]=b;}// a: snapshot,release,old; b: versions
     Q_INVOKABLE void get_new_game_list();
+    Q_INVOKABLE void get_new_game_json();
 public slots:
-    void http_get_Completed(QNetworkReply* reply);
+    void new_game_list_http_get_Completed(QNetworkReply* reply);
 signals:
     void get_Completed();
     void get_Failed();

@@ -4,6 +4,7 @@
 #include <QLocale>
 #include <QTranslator>
 #include <QQmlContext>
+#include <QDir>
 #include "game_version_manager.h"
 #include "user_manager.h"
 
@@ -47,6 +48,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
+    QDir game_dir(".minecraft");
     //load user list
     user_manager user_manager;
     user_manager.read_file();

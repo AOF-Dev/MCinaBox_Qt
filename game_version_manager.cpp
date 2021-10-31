@@ -25,7 +25,7 @@ void install_new_game::get_new_game_list(){
 
 }
 
-void install_new_game::http_get_Completed(QNetworkReply* reply){
+void install_new_game::new_game_list_http_get_Completed(QNetworkReply* reply){
     QNetworkReply::NetworkError err = reply->error();
     if(err != QNetworkReply::NoError) {
         qDebug() << "Failed: " << reply->errorString();
