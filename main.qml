@@ -11,6 +11,8 @@ Window {
     height: 500
     visible: true
     Material.theme: Material.Light
+    property int index_a: 0
+    property int index_b: 0
     Image {
         id: backgroundimage
         anchors.fill: parent
@@ -516,7 +518,10 @@ Window {
                 height: window.height/6
                 text: qsTr("快照版")
                 font.pointSize: 15
-                onClicked: game_stackView.push(choose_install_game_version_page_snapshot)
+                onClicked: {
+                    game_stackView.push(choose_install_game_version_page_snapshot)
+                    index_a = 1
+                }
             }
             Button {
                 id: release_version_button
@@ -526,7 +531,10 @@ Window {
                 height: window.height/6
                 text: qsTr("正式版")
                 font.pointSize: 15
-                onClicked: game_stackView.push(choose_install_game_version_page_release)
+                onClicked: {
+                    game_stackView.push(choose_install_game_version_page_release)
+                    index_a = 2
+                }
             }
             Button {
                 id: old_version_button
@@ -536,7 +544,10 @@ Window {
                 height: window.height/6
                 text: qsTr("旧版")
                 font.pointSize: 15
-                onClicked: game_stackView.push(choose_install_game_version_page_old)
+                onClicked: {
+                    game_stackView.push(choose_install_game_version_page_old)
+                    index_a = 3
+                }
             }
         }
     }
@@ -577,6 +588,7 @@ Window {
                     }
                     onClicked: {
                         game_stackView.push(choose_install_options_page)
+                        index_b = index
                     }
                 }
             }
@@ -619,6 +631,7 @@ Window {
                     }
                     onClicked: {
                         game_stackView.push(choose_install_options_page)
+                        index_b = index
                     }
                 }
             }
@@ -660,6 +673,7 @@ Window {
                     }
                     onClicked: {
                         game_stackView.push(choose_install_options_page)
+                        index_b = index
                     }
                 }
             }
@@ -710,7 +724,7 @@ Window {
                 height: (parent.height-back_button_install_options.height)/5
                 width: parent.width/2
                 text: qsTr("重置")
-                font.pointSize: 1
+                font.pointSize: 18
             }
 
             Button {
@@ -722,6 +736,10 @@ Window {
                 enabled: true
                 text: qsTr("安装")
                 font.pointSize: 18
+                onClicked: {
+                    install_new_game.set_index(index_a,index_b)
+                    console.log(index_a,index_b)
+                }
             }
         }
     }
