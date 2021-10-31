@@ -20,16 +20,16 @@ void install_new_game::get_new_game_list(){
     QNetworkRequest get_request(QUrl("https://launchermeta.mojang.com/mc/game/version_manifest.json"));
     get_request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
     QNetworkReply *get_reply;
-    QObject::connect(http_manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(http_get_completed(QNetworkReply*)));
+    QObject::connect(http_manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(http_get_Completed(QNetworkReply*)));
     get_reply=http_manager->get(get_request);
 
 }
 
-void install_new_game::http_get_completed(QNetworkReply* reply){
+void install_new_game::http_get_Completed(QNetworkReply* reply){
     QNetworkReply::NetworkError err = reply->error();
     if(err != QNetworkReply::NoError) {
         qDebug() << "Failed: " << reply->errorString();
-        emit install_new_game::get_failed();
+        emit install_new_game::get_Failed();
     }
     else {
         QJsonDocument data = QJsonDocument::fromJson(reply->readAll());
@@ -52,7 +52,7 @@ void install_new_game::http_get_completed(QNetworkReply* reply){
         emit snapshot_version_Changed();
         emit release_version_Changed();
         emit old_version_Changed();
-        emit install_new_game::get_completed();
+        emit install_new_game::get_Completed();
     }
 
 }
