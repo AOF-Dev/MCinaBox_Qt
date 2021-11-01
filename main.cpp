@@ -48,7 +48,9 @@ int main(int argc, char *argv[])
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
 
-    QDir game_dir(".minecraft");
+    //check&create game dir
+    QDir game_dir;
+    if(!game_dir.exists(".minecraft")) game_dir.mkdir(".minecraft");
     //load user list
     user_manager user_manager;
     user_manager.read_file();

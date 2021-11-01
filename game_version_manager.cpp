@@ -54,5 +54,8 @@ void install_new_game::new_game_list_http_get_Completed(QNetworkReply* reply){
         emit old_version_Changed();
         emit install_new_game::get_Completed();
     }
-
 }
+
+void install_new_game::get_new_game_json(){}
+
+void install_new_game::new_game_json_http_get_Completed(QNetworkReply* reply){}

@@ -50,6 +50,7 @@ public:
     Q_INVOKABLE void get_new_game_json();
 public slots:
     void new_game_list_http_get_Completed(QNetworkReply* reply);
+    void new_game_json_http_get_Completed(QNetworkReply* reply);
 signals:
     void get_Completed();
     void get_Failed();
