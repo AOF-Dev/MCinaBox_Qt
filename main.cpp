@@ -51,6 +51,7 @@ int main(int argc, char *argv[])
     //check&create game dir
     QDir game_dir;
     if(!game_dir.exists(".minecraft")) game_dir.mkdir(".minecraft");
+    if(!game_dir.exists(".minecraft/versions")) game_dir.mkdir(".minecraft/versions");
     //load user list
     user_manager user_manager;
     user_manager.read_file();
