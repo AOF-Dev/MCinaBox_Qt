@@ -13,6 +13,7 @@ Window {
     Material.theme: Material.Light
     property int index_a: 0
     property int index_b: 0
+    property string new_game_name: ""
     Image {
         id: backgroundimage
         anchors.fill: parent
@@ -589,6 +590,7 @@ Window {
                     onClicked: {
                         game_stackView.push(choose_install_options_page)
                         index_b = index
+                        new_game_name = modelData
                     }
                 }
             }
@@ -632,6 +634,7 @@ Window {
                     onClicked: {
                         game_stackView.push(choose_install_options_page)
                         index_b = index
+                        new_game_name = modelData
                     }
                 }
             }
@@ -674,6 +677,7 @@ Window {
                     onClicked: {
                         game_stackView.push(choose_install_options_page)
                         index_b = index
+                        new_game_name = modelData
                     }
                 }
             }
@@ -718,6 +722,21 @@ Window {
                 enabled: false
                 text: qsTr("安装Fabric（未实现）")
             }
+            TextInput {
+                id: new_game_name_textinput
+                y: back_button_install_options.height*0.85+(parent.height-back_button_install_options.height)*3/5
+                width: parent.width
+                height: (parent.height-back_button_install_options.height)/5
+                text: new_game_name
+                horizontalAlignment: Text.AlignHCenter
+                selectByMouse: true
+                font.pointSize: 20
+                onTextChanged: {
+                    for(var i = 0; i < game_version_manager.count_game_version_list(); ++i) if (game_version_manager.get_game_version_string(i) == text) install_button.enabled = false
+                    else install_button.enabled = true
+                }
+            }
+
             Button {
                 z: 1
                 y: parent.height-height
@@ -725,20 +744,23 @@ Window {
                 width: parent.width/2
                 text: qsTr("重置")
                 font.pointSize: 18
+                onClicked: new_game_name_textinput.text = new_game_name
             }
 
             Button {
+                id: install_button
                 z: 0
                 x: width
                 y: parent.height-height
                 height: (parent.height-back_button_install_options.height)/5
                 width: parent.width/2
                 enabled: true
-                text: qsTr("安装")
+                text: enabled? qsTr("安装") : qsTr("安装（游戏名已存在）")
                 font.pointSize: 18
                 onClicked: {
                     install_new_game.set_index(index_a,index_b)
-                    console.log(index_a,index_b)
+                    install_new_game.set_new_game_name(new_game_name_textinput.text)
+                    install_new_game.get_new_game_json()
                 }
             }
         }
