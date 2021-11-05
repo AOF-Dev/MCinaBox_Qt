@@ -5,6 +5,8 @@
 #include <QTranslator>
 #include <QQmlContext>
 #include <QDir>
+#include <QCoreApplication>
+
 #include "game_version_manager.h"
 #include "user_manager.h"
 
@@ -36,7 +38,6 @@ bool checkPermission2() {
 
 int main(int argc, char *argv[])
 {
-
 #ifdef Q_OS_ANDROID
     checkPermission();
     checkPermission2();

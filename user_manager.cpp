@@ -1,5 +1,4 @@
 #include "user_manager.h"
-#include <QFile>
 
 user_manager::user_manager(QObject *parent) : QObject(parent)
 {

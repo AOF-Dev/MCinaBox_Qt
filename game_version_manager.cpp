@@ -23,12 +23,10 @@ void game_version_manager::run(){
 
 void install_new_game::get_new_game_list(){
     QNetworkAccessManager *http_manager = new QNetworkAccessManager();
-    QNetworkRequest get_request(QUrl("https://launchermeta.mojang.com/mc/game/version_manifest.json"));
+    QNetworkRequest get_request(QUrl(QString("https://launchermeta.mojang.com/mc/game/version_manifest.json")/*.replace("https://launchermeta.mojang.com","https://download.mcbbs.net")*/));
     get_request.setHeader(QNetworkRequest::ContentTypeHeader,QVariant("application/json"));
-    QNetworkReply *get_reply;
     QObject::connect(http_manager,SIGNAL(finished(QNetworkReply*)),this,SLOT(new_game_list_http_get_Completed(QNetworkReply*)));
-    get_reply=http_manager->get(get_request);
-
+    http_manager->get(get_request);
 }
 
 void install_new_game::new_game_list_http_get_Completed(QNetworkReply* reply){
@@ -90,4 +88,7 @@ void install_new_game::new_game_json_http_get_Completed(QNetworkReply* reply){
     game_json.open(QIODevice::WriteOnly);
     game_json.write(reply->readAll());
     game_json.close();
+    checker checker;
+    checker.game_name = new_game_name;
+    checker.run();
 }
