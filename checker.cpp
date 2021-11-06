@@ -34,8 +34,6 @@ void checker::run(){
         connect(new_game_downloader,SIGNAL(finished()),this,SLOT(pthread_Completed()));
         connect(this,SIGNAL(download_Completed()),&eventloop,SLOT(quit()));
         eventloop.exec();
-        game_version_manager game_version_manager;
-        game_version_manager.run(); //destroy the parent thread will also destroy the child thread,and there is no need to create a new thread,so just run it
     }
 }
 

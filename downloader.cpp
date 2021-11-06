@@ -48,4 +48,3 @@ void new_game_downloader::run(){
         }
     }
 }
-

@@ -3,6 +3,9 @@
 game_version_manager::game_version_manager(QObject *parent){}
 install_new_game::install_new_game(QObject *parent){}
 
+QString game_version_manager::get_game_version_string(int i){return game_version_list[i];}
+int game_version_manager::count_game_version_list(){return game_version_list.count();}
+
 void game_version_manager::fresh_game_version_list(){
     this->start();
 }
@@ -20,6 +23,12 @@ void game_version_manager::run(){
     for (int i=0;i<game_version_list.count();i++) if (game_version_list[i]=="." | game_version_list[i]==".." | dir_is_empty(game_version_dir.path()+"/"+game_version_list[i])) {game_version_list.removeAt(i);i--;}
     emit game_version_manager::game_version_list_Changed();
 }
+
+QStringList install_new_game::to_snapshot_version(){return snapshot_version;}
+QStringList install_new_game::to_release_version(){return release_version;}
+QStringList install_new_game::to_old_version(){return old_version;}
+void install_new_game::set_index(int a,int b){index[0]=a; index[1]=b;}// a: snapshot,release,old; b: versions
+void install_new_game::set_new_game_name(QString s){new_game_name=s;}
 
 void install_new_game::get_new_game_list(){
     QNetworkAccessManager *http_manager = new QNetworkAccessManager();
@@ -90,4 +99,5 @@ void install_new_game::new_game_json_http_get_Completed(QNetworkReply* reply){
     checker checker;
     checker.game_name = new_game_name;
     checker.run();
+    game_version_manager_p->fresh_game_version_list();
 }

@@ -55,12 +55,14 @@ int main(int argc, char *argv[])
     //load user list
     user_manager user_manager;
     user_manager.read_file();
+    //load checker
+    checker checker;
     //load game version list
     game_version_manager game_version_manager;
     game_version_manager.start();
     //get new game list
     install_new_game install_new_game;
-
+    install_new_game.game_version_manager_p = &game_version_manager;
     QGuiApplication app(argc, argv);
 
     QTranslator translator;
