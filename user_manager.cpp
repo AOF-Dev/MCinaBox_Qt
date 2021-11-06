@@ -1,9 +1,8 @@
 #include "user_manager.h"
 
-user_manager::user_manager(QObject *parent) : QObject(parent)
-{
+user_manager::user_manager(QObject *parent) : QObject(parent){}
 
-}
+QStringList user_manager::to_user_name_list(){return user_name_list;}
 
 void user_manager::add_user(QString user_name, QString user_password, QString logging_method){
     user_name_list.append(user_name);
