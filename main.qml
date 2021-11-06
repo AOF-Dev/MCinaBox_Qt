@@ -761,6 +761,7 @@ Window {
                     install_new_game.set_index(index_a,index_b)
                     install_new_game.set_new_game_name(new_game_name_textinput.text)
                     install_new_game.get_new_game_json()
+                    game_stackView.pop(null)
                 }
             }
         }
