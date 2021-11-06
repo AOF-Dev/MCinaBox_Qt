@@ -82,8 +82,7 @@ void install_new_game::get_new_game_json(){ //then start checker
 
 void install_new_game::new_game_json_http_get_Completed(QNetworkReply* reply){
     QDir game_dir;
-    if(!game_dir.exists(".minecraft/versions/")) game_dir.mkdir(".minecraft");
-    if(!game_dir.exists(".minecraft/versions/"+new_game_name)) game_dir.mkdir(".minecraft/versions/"+new_game_name);
+    if(!game_dir.exists(".minecraft/versions/"+new_game_name)) game_dir.mkpath(".minecraft/versions/"+new_game_name);
     QFile game_json(".minecraft/versions/"+new_game_name+"/"+new_game_name+".json");
     game_json.open(QIODevice::WriteOnly);
     game_json.write(reply->readAll());

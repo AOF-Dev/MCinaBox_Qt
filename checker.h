@@ -2,12 +2,6 @@
 #define CHECKER_H
 
 #include <QObject>
-#include <QThread>
-#include <QFile>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonParseError>
-#include <QCryptographicHash>
 
 #include "downloader.h"
 
@@ -19,14 +13,17 @@ public:
     QString game_name;
     void run();
     void check_game();
+    void check_library();
+    void check_asset();
     QStringList link_list,path_list,sha1_list;
-    int done;
+    int downloaded;
+    int downloading;
     int pthread = 1;
 public slots:
-    void check_done();
+    void pthread_Completed();
 
 signals:
-    void pthread_completed();
+    void download_Completed();
 };
 
 #endif // CHECKER_H

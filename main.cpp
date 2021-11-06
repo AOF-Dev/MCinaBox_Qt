@@ -51,14 +51,13 @@ int main(int argc, char *argv[])
 
     //check&create game dir
     QDir game_dir;
-    if(!game_dir.exists(".minecraft")) game_dir.mkdir(".minecraft");
-    if(!game_dir.exists(".minecraft/versions")) game_dir.mkdir(".minecraft/versions");
+    if(!game_dir.exists(".minecraft")) game_dir.mkpath(".minecraft");
     //load user list
     user_manager user_manager;
     user_manager.read_file();
     //load game version list
     game_version_manager game_version_manager;
-    game_version_manager.fresh_game_version_list();
+    game_version_manager.start();
     //get new game list
     install_new_game install_new_game;
 

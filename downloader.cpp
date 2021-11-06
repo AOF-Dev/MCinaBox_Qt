@@ -3,12 +3,12 @@
 #include <QNetworkRequest>
 #include <QNetworkReply>
 #include <QEventLoop>
+#include <QFile>
+#include <QDir>
 
 new_game_downloader::new_game_downloader(QThread *parent){}
 
-void new_game_downloader::download_error(){
-    qDebug()<<"real error";
-}
+
 
 void new_game_downloader::run(){
     QNetworkAccessManager *http_manager = new QNetworkAccessManager();
@@ -16,6 +16,9 @@ void new_game_downloader::run(){
     QNetworkReply *get_reply;
     QEventLoop eventloop;
     QFile file;
+    QFileInfo file_info;
+    QDir file_dir;
+
     connect(http_manager,SIGNAL(finished(QNetworkReply*)),&eventloop,SLOT(quit()));
 
     while (index < link_list->count()) {
@@ -27,12 +30,14 @@ void new_game_downloader::run(){
         if (get_reply->error() == QNetworkReply::NoError) {
             QByteArray buff = get_reply->readAll();
             if (sha1_list->at(index) == QCryptographicHash::hash(buff, QCryptographicHash::Sha1).toHex()){
-            file.setFileName(path_list->at(index));
+                file.setFileName(path_list->at(index));
+                file_info.setFile(file);
+                file_dir.mkpath(file_info.path());
                 file.open(QIODevice::WriteOnly);
                 file.write(buff);
                 file.close();
-                *done = *done + 1;
-                index = *done;
+                *downloading+=1;
+                index = *downloading; qDebug()<<index<<"/"<<link_list->count();
             }
             else{
                 qDebug()<<"hash error";
