@@ -29,8 +29,9 @@ public:
     void run();
     Q_INVOKABLE QString get_game_version_string(int i);
     Q_INVOKABLE int count_game_version_list();
+    Q_INVOKABLE void fresh_game_version_list();
 public slots:
-    void fresh_game_version_list();
+
 signals:
     void game_version_list_Changed();
 
@@ -56,6 +57,7 @@ public:
     Q_INVOKABLE void get_new_game_list();
     Q_INVOKABLE void get_new_game_json();
     game_version_manager *game_version_manager_p;
+    checker *checker_p;
 public slots:
     void new_game_list_http_get_Completed(QNetworkReply* reply);
     void new_game_json_http_get_Completed(QNetworkReply* reply);

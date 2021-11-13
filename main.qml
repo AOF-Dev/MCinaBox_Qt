@@ -18,80 +18,67 @@ Window {
         id: backgroundimage
         anchors.fill: parent
         source: "/icon/66908482_p0_waifu2x_art_scale_tta_1.png"
+        fillMode: Image.PreserveAspectCrop
     }
     ToolBar {
         id: toptoolbar
         z: 10
         width: parent.width
-        height: 50
+        height: 51
         Label {
             id: title
             x: font.pointSize*0.3
             text: "MCinaBox"
-            font.pointSize: 22.8
+            font.pixelSize: 40
         }
-
         ToolButton {
-            id: toptoolbutton
-            width: toptoolbar.height
-            height: toptoolbar.height
-            x: toptoolbar.width-height
+            id: back_button
+            x: parent.width-width
+            width: parent.height
+            visible: game_stackView.depth != 1
+            text: "\u25C4"
+            font.pixelSize: 25
             onReleased: {
-                launcher_settings.open()
-            }
-
-            Text {
-                x: (parent.width-contentWidth)/2
-                y: (parent.height-contentHeight)/2
-                color: Material.foreground
-                text: "≡"
-                font.pointSize: 18
+                game_stackView.pop()
+                if (game_stackView.depth == 2) game_stackView.pop() //no more depth plz
             }
         }
         ToolButton {
-            id: downloader_button
-            width: toptoolbar.height
-            height: toptoolbar.height
-            x: toptoolbutton.x-width
+            id: refresh_button
+            x: game_stackView.depth == 1 ? parent.width-width : back_button.x-width
+            width: parent.height
+            text: "\u21BA"
+            font.pixelSize: 25
             onReleased: {
-                downloader.open()
-            }
-            Image {
-                x: 10
-                y: 10
-                width: parent.width*1.2
-                height: parent.height*1.5
-                source: "/icon/downloader_icon.svg"
+                if (game_stackView.depth == 1 ) game_version_manager.fresh_game_version_list()
             }
         }
-    }
-
-    Popup {
-        id: launcher_settings
-        x: window.width*0.1
-        y: window.height*0.1
-        width: window.width*0.8
-        height: window.height*0.8
-    }
-    Popup {
-        id: downloader
-        x: window.width*0.1
-        y: window.height*0.1
-        width: window.width*0.8
-        height: window.height*0.8
+        Label {
+            id: progressbar
+            x: parent.width/2
+            height: parent.height
+            width: contentWidth
+            text: qsTr("无下载")
+            font.pixelSize: 30
+            Connections {
+                target: checker
+                onFresh_downloaded: progressbar.text = qsTr("下载中")+checker.to_downloaded()+"/"+checker.to_total()
+                onDownload_Completed: progressbar.text = qsTr("下载完成")
+            }
+        }
     }
 
     ToolBar {
         id: bottomtoolbar
         z: 10
         y: parent.height-height
-        height: 50
+        height: 51
         width: parent.width
         Label {
             id: game_version_label
             x: 5
             text: qsTr("请选择游戏版本")
-            font.pointSize: 21
+            font.pixelSize: 34
         }
         Button {
             x: window.width*0.99-width
@@ -173,7 +160,7 @@ Window {
                         height: 50
                         Material.background: highlighted? "#60E91E63" : "#00000000"
                         text: modelData
-                        font.pointSize: 13
+                        font.pointSize: 18
                         onClicked: {
                             if (user_list.currentIndex!=-1) user_list.currentItem.highlighted = false
                             user_list.currentIndex = index
@@ -219,6 +206,14 @@ Window {
                     game_stackView.push(busy_page)
                     install_new_game.get_new_game_list()
                 }
+            }
+            Button {
+                Material.background: "#88ffffff"
+                z: -1
+                y: user_list.y+user_list.height+160
+                width: parent.width
+                text: qsTr("关于")
+                font.pointSize: 15
             }
         }
     }
@@ -371,12 +366,12 @@ Window {
         width: window.width-x
         height: window.height-toptoolbar.height-bottomtoolbar.height
         Component.onCompleted: push(game_list_page)
+
     }
     Component {
         id: game_list_page
         Rectangle {
             color: "#00000000"
-            anchors.fill: parent
             Button {
                 id: add_new_game_button
                 visible: game_list.count==0 ? true : false
@@ -391,7 +386,7 @@ Window {
                     install_new_game.get_new_game_list()
                 }
             }
-
+            Component.onCompleted: game_version_manager.fresh_game_version_list
             ListView {
                 id: game_list
                 y: game_list.count==0 ? add_new_game_button.height*1.05 : 0
@@ -410,7 +405,7 @@ Window {
                         x: 20
                         y: 10
                         text: modelData
-                        font.pointSize: 20
+                        font.pointSize: 30
 
                     }
                     Button {
@@ -458,6 +453,10 @@ Window {
                         game_stackView.push(get_failed_page)
                     }
                 }
+                Connections {
+                    target: checker
+                    onFresh_downloaded: game_stackView.pop(null)
+                }
             }
         }
     }
@@ -474,8 +473,7 @@ Window {
                 text: qsTr("返回")
                 font.pointSize: 18
                 onClicked: {
-                    game_stackView.pop()
-                    game_stackView.pop()
+                    game_stackView.pop(null)
                 }
             }
             Rectangle {
@@ -498,79 +496,59 @@ Window {
         id: choose_install_game_version_page_root
         Rectangle {
             color: "#00000000"
-            Button {
-                id: back_button_root
-                Material.background: "#aaffffff"
-                y: -height*0.1
-                width: parent.width
-                height: parent.height*0.2
-                text: qsTr("返回")
-                font.pointSize: 18
-                onClicked: {
-                    game_stackView.pop()
-                    game_stackView.pop()
+            Column {
+                anchors.fill: parent
+                spacing: 10
+                Button {
+                    id: snapshot_version_button
+                    Material.background: "#88ffffff"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width
+                    height: window.height/5
+                    text: qsTr("快照版（有问题）")
+                    font.pointSize: 15
+                    onClicked: {
+                        game_stackView.push(choose_install_game_version_page_snapshot)
+                        index_a = 1
+                    }
+                }
+                Button {
+                    id: release_version_button
+                    Material.background: "#88ffffff"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width
+                    height: window.height/5
+                    text: qsTr("正式版")
+                    font.pointSize: 15
+                    onClicked: {
+                        game_stackView.push(choose_install_game_version_page_release)
+                        index_a = 2
+                    }
+                }
+                Button {
+                    id: old_version_button
+                    Material.background: "#88ffffff"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width
+                    height: window.height/5
+                    text: qsTr("旧版（有问题）")
+                    font.pointSize: 15
+                    onClicked: {
+                        game_stackView.push(choose_install_game_version_page_old)
+                        index_a = 3
+                    }
                 }
             }
-            Button {
-                id: snapshot_version_button
-                Material.background: "#88ffffff"
-                y: back_button_root.height*1.03
-                width: parent.width
-                height: window.height/6
-                text: qsTr("快照版")
-                font.pointSize: 15
-                onClicked: {
-                    game_stackView.push(choose_install_game_version_page_snapshot)
-                    index_a = 1
-                }
-            }
-            Button {
-                id: release_version_button
-                Material.background: "#88ffffff"
-                y: snapshot_version_button.y+snapshot_version_button.height*1.01
-                width: parent.width
-                height: window.height/6
-                text: qsTr("正式版")
-                font.pointSize: 15
-                onClicked: {
-                    game_stackView.push(choose_install_game_version_page_release)
-                    index_a = 2
-                }
-            }
-            Button {
-                id: old_version_button
-                Material.background: "#88ffffff"
-                y: release_version_button.y+snapshot_version_button.height*1.01
-                width: parent.width
-                height: window.height/6
-                text: qsTr("旧版")
-                font.pointSize: 15
-                onClicked: {
-                    game_stackView.push(choose_install_game_version_page_old)
-                    index_a = 3
-                }
-            }
+
+
         }
     }
     Component {
         id: choose_install_game_version_page_snapshot
         Rectangle {
             color: "#00000000"
-            Button {
-                id: back_button_snapshot
-                Material.background: "#aaffffff"
-                y: -height*0.1
-                width: parent.width
-                height: parent.height*0.2
-                text: qsTr("返回")
-                font.pointSize: 18
-                onClicked: {
-                    game_stackView.pop()
-                }
-            }
             ListView {
                 id: snapshot_list
-                y: back_button_snapshot.height*1.03
                 width: parent.width
                 height: parent.height
                 spacing: -10
@@ -600,21 +578,8 @@ Window {
         id: choose_install_game_version_page_release
         Rectangle {
             color: "#00000000"
-            Button {
-                id: back_button_release
-                Material.background: "#aaffffff"
-                y: -height*0.1
-                width: parent.width
-                height: parent.height*0.2
-                text: qsTr("返回")
-                font.pointSize: 18
-                onClicked: {
-                    game_stackView.pop()
-                }
-            }
             ListView {
                 id: release_list
-                y: back_button_release.height*1.03
                 width: parent.width
                 height: parent.height
                 spacing: -10
@@ -644,21 +609,8 @@ Window {
         id: choose_install_game_version_page_old
         Rectangle {
             color: "#00000000"
-            Button {
-                id: back_button_old
-                Material.background: "#aaffffff"
-                y: -height*0.1
-                width: parent.width
-                height: parent.height*0.2
-                text: qsTr("返回")
-                font.pointSize: 18
-                onClicked: {
-                    game_stackView.pop()
-                }
-            }
             ListView {
                 id: old_list
-                y: back_button_old.height*1.03
                 width: parent.width
                 height: parent.height
                 spacing: -10
@@ -687,83 +639,64 @@ Window {
         id: choose_install_options_page
         Rectangle {
             color: "#00000000"
-            anchors.fill: parent
-            Button {
-                id: back_button_install_options
-                Material.background: "#aaffffff"
-                y: -height*0.1
-                width: parent.width
-                height: parent.height*0.2
-                text: qsTr("返回")
-                font.pointSize: 18
-                onClicked: {
-                    game_stackView.pop()
+            Column {
+                anchors.fill: parent
+                spacing: 5
+                Button {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: parent.height/5.3
+                    width: parent.width
+                    enabled: false
+                    text: qsTr("安装Optifine（未实现）")
+                }
+                Button {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: parent.height/5.3
+                    width: parent.width
+                    enabled: false
+                    text: qsTr("安装Forge（未实现）")
+                }
+                Button {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: parent.height/5.3
+                    width: parent.width
+                    enabled: false
+                    text: qsTr("安装Fabric（未实现）")
+                }
+                TextInput {
+                    id: new_game_name_textinput
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: parent.width
+                    height: parent.height/6
+                    text: new_game_name
+                    horizontalAlignment: Text.AlignHCenter
+                    selectByMouse: true
+                    font.pointSize: 20
+                    onTextChanged: {
+                        for(var i = 0; i < game_version_manager.count_game_version_list(); ++i) if (game_version_manager.get_game_version_string(i) == text) install_button.enabled = false
+                        else install_button.enabled = true
+                    }
+                }
+                Button {
+                    id: install_button
+                    z: 0
+                    x: width
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    height: parent.height/5
+                    width: parent.width/2
+                    enabled: true
+                    text: enabled? qsTr("安装") : qsTr("安装（游戏名已存在）")
+                    font.pointSize: 18
+                    onClicked: {
+                        install_new_game.set_index(index_a,index_b)
+                        install_new_game.set_new_game_name(new_game_name_textinput.text)
+                        install_new_game.get_new_game_json()
+                        game_stackView.push(busy_page)
+                    }
                 }
             }
 
-            Button {
-                y: back_button_install_options.height*0.85
-                height: (parent.height-back_button_install_options.height)/5
-                width: parent.width
-                enabled: false
-                text: qsTr("安装Optifine（未实现）")
-            }
-            Button {
-                y: back_button_install_options.height*0.85+(parent.height-back_button_install_options.height)/5
-                height: (parent.height-back_button_install_options.height)/5
-                width: parent.width
-                enabled: false
-                text: qsTr("安装Forge（未实现）")
-            }
-            Button {
-                y: back_button_install_options.height*0.85+(parent.height-back_button_install_options.height)*2/5
-                height: (parent.height-back_button_install_options.height)/5
-                width: parent.width
-                enabled: false
-                text: qsTr("安装Fabric（未实现）")
-            }
-            TextInput {
-                id: new_game_name_textinput
-                y: back_button_install_options.height*0.85+(parent.height-back_button_install_options.height)*3/5
-                width: parent.width
-                height: (parent.height-back_button_install_options.height)/5
-                text: new_game_name
-                horizontalAlignment: Text.AlignHCenter
-                selectByMouse: true
-                font.pointSize: 20
-                onTextChanged: {
-                    for(var i = 0; i < game_version_manager.count_game_version_list(); ++i) if (game_version_manager.get_game_version_string(i) == text) install_button.enabled = false
-                    else install_button.enabled = true
-                }
-            }
 
-            Button {
-                z: 1
-                y: parent.height-height
-                height: (parent.height-back_button_install_options.height)/5
-                width: parent.width/2
-                text: qsTr("重置")
-                font.pointSize: 18
-                onClicked: new_game_name_textinput.text = new_game_name
-            }
-
-            Button {
-                id: install_button
-                z: 0
-                x: width
-                y: parent.height-height
-                height: (parent.height-back_button_install_options.height)/5
-                width: parent.width/2
-                enabled: true
-                text: enabled? qsTr("安装") : qsTr("安装（游戏名已存在）")
-                font.pointSize: 18
-                onClicked: {
-                    install_new_game.set_index(index_a,index_b)
-                    install_new_game.set_new_game_name(new_game_name_textinput.text)
-                    install_new_game.get_new_game_json()
-                    game_stackView.pop(null)
-                }
-            }
         }
     }
 
@@ -810,6 +743,6 @@ Window {
 
 /*##^##
 Designer {
-    D{i:0;autoSize:true;height:480;width:640}
+    D{i:0;autoSize:true;formeditorZoom:0.1;height:480;width:640}
 }
 ##^##*/

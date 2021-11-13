@@ -59,9 +59,10 @@ int main(int argc, char *argv[])
     checker checker;
     //load game version list
     game_version_manager game_version_manager;
-    game_version_manager.start();
+    //game_version_manager.start();
     //get new game list
     install_new_game install_new_game;
+    install_new_game.checker_p = &checker;
     install_new_game.game_version_manager_p = &game_version_manager;
     QGuiApplication app(argc, argv);
 
@@ -78,6 +79,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     engine.rootContext()->setContextProperty("game_version_manager",&game_version_manager);
+    engine.rootContext()->setContextProperty("checker",&checker);
     engine.rootContext()->setContextProperty("user_manager",&user_manager);
     engine.rootContext()->setContextProperty("install_new_game",&install_new_game);
 

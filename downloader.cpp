@@ -37,7 +37,8 @@ void new_game_downloader::run(){
                 file.write(buff);
                 file.close();
                 *downloading+=1;
-                index = *downloading; qDebug()<<index<<"/"<<link_list->count();
+                index = *downloading;
+                emit completed_one();
             }
             else{
                 qDebug()<<"hash error";

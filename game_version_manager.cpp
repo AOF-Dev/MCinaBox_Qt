@@ -96,8 +96,7 @@ void install_new_game::new_game_json_http_get_Completed(QNetworkReply* reply){
     game_json.open(QIODevice::WriteOnly);
     game_json.write(reply->readAll());
     game_json.close();
-    checker checker;
-    checker.game_name = new_game_name;
-    checker.run();
+    checker_p->game_name = new_game_name;
+    checker_p->run();
     game_version_manager_p->fresh_game_version_list();
 }

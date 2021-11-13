@@ -19,7 +19,7 @@ public:
 public slots:
 
 signals:
-
+    void completed_one();
 };
 
 #endif // DOWNLOADER_H

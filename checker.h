@@ -16,14 +16,22 @@ public:
     void check_library();
     void check_asset();
     QStringList link_list,path_list,sha1_list;
-    int downloaded;
+    Q_INVOKABLE int to_total();
     int downloading;
-    int pthread = 1;
+    Q_INVOKABLE int to_downloaded();
+    Q_PROPERTY(int pthread READ to_pthread WRITE set_pthread NOTIFY pthread_Changed)
+    int pthread = 30;
+    int to_pthread();
+    int finished_pthread;
+    void set_pthread(int i);
 public slots:
-    void pthread_Completed();
-
+    void pthread_Completed_one();
+    void pthread_finished();
 signals:
+    void fresh_downloaded();
     void download_Completed();
+
+    void pthread_Changed();
 };
 
 #endif // CHECKER_H

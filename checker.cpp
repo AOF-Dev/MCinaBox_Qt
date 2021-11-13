@@ -13,13 +13,18 @@
 
 checker::checker(QObject *parent){}
 
+int checker::to_pthread(){return pthread;}
+void checker::set_pthread(int i){pthread=i;}
+int checker::to_total(){return link_list.count();}
+int checker::to_downloaded(){return downloading-pthread;}
+
 void checker::run(){
     QEventLoop eventloop;
     check_game();
     check_library();
     check_asset();
     if (link_list.count() > 0){
-        downloaded = 0;
+        finished_pthread = 0;
         new_game_downloader new_game_downloader[pthread];
         for (downloading = 0; downloading < pthread; downloading++){
             new_game_downloader[downloading].index = downloading;
@@ -28,18 +33,33 @@ void checker::run(){
             new_game_downloader[downloading].path_list = &path_list;
             new_game_downloader[downloading].sha1_list = &sha1_list;
         }
+        downloading-=1;
+        emit fresh_downloaded();
+        for (int i=0; i < pthread; i++){
+            connect(&new_game_downloader[i],SIGNAL(finished()),this,SLOT(pthread_finished()));
+        }
+        for (int i=0; i < pthread; i++){
+            connect(&new_game_downloader[i],SIGNAL(completed_one()),this,SLOT(pthread_Completed_one()));
+        }
+        connect(this,SIGNAL(download_Completed()),&eventloop,SLOT(quit()));
         for (int i = 0; i < pthread; i++){
             new_game_downloader[i].start();
         }
-        connect(new_game_downloader,SIGNAL(finished()),this,SLOT(pthread_Completed()));
-        connect(this,SIGNAL(download_Completed()),&eventloop,SLOT(quit()));
         eventloop.exec();
+        link_list.clear();
+        path_list.clear();
+        sha1_list.clear();
     }
 }
 
-void checker::pthread_Completed(){
-    downloaded++;
-    if (downloaded == link_list.count()) emit download_Completed();
+void checker::pthread_Completed_one(){
+    qDebug()<<downloading<<"/"<<link_list.count();
+    emit fresh_downloaded();
+}
+
+void checker::pthread_finished(){
+    finished_pthread++;
+    if (finished_pthread == pthread) emit download_Completed();
 }
 
 void checker::check_game(){
