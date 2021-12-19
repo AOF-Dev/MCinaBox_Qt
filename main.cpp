@@ -6,6 +6,7 @@
 #include <QQmlContext>
 #include <QDir>
 #include <QCoreApplication>
+#include <QQuickWindow>
 
 #include "game_version_manager.h"
 #include "user_manager.h"
@@ -45,6 +46,7 @@ int main(int argc, char *argv[])
 
     //qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));  //Qt virtualkeyboard
     QQuickStyle::setStyle("Material");
+    QQuickWindow::setSceneGraphBackend(QSGRendererInterface::VulkanRhi);//MUCH FASTER!!!
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
